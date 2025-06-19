@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 export function Navbar() {
@@ -8,17 +9,20 @@ export function Navbar() {
 
   return (
     <nav className="w-full border-b border-gray-800 px-4 py-3 flex justify-between items-center bg-black">
-      <div className="flex gap-6">
-        <Link href="/backtest" className="hover:text-blue-400">Backtest</Link>
-        <Link href="/results" className="hover:text-blue-400">Results</Link>
-        <Link href="/history" className="hover:text-blue-400">History</Link>
-        <Link href="/active-strategies" className="hover:text-blue-400">Active</Link>
-        <Link href="/open-trades" className="hover:text-blue-400">Trades</Link>
+      <Link href="/" className="text-2xl font-bold text-blue-500">
+        <Image src="/nocturne-logo1.png" alt="Nocturne Logo" className="inline-block h-8 w-8" width={50} height={60}/>
+        Nocturne
+      </Link>
+      
+      <div className="flex gap-6 text-gray-500 ml-6">
+        <Link href="/build" className="hover:text-white py-1">Build</Link>
+        <Link href="/dashboard" className="hover:text-white py-1">Dashboard</Link>
+        <Link href="/leaderboard" className="hover:text-white py-1">Leaderboard</Link>
       </div>
 
       <button
         onClick={() => setWalletConnected(!walletConnected)}
-        className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg"
+        className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg mr-2"
       >
         {walletConnected ? 'Disconnect Wallet' : 'Connect Wallet'}
       </button>
