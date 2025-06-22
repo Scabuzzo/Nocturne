@@ -13,20 +13,20 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/_components/*": ["./src/_components/*"],
-      "@/_lib/*": ["./src/_lib/*"],
-      "@/_assets/*": ["./src/_assets/*"],
-      "@/_styles/*": ["./src/_styles/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts", 
-    "**/*.tsx", 
+    "**/*.ts",
+    "**/*.tsx",
     ".next/types/**/*.ts",
     "src/**/*"
   ],
