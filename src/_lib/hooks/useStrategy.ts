@@ -1,6 +1,7 @@
 // src/_lib/hooks/useStrategy.ts
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Strategy, Indicator, IndicatorType, RiskManagement } from '@/_lib/types/strategy';
 import { INDICATOR_CONFIG } from '@/_lib/constants/indicators';
 
@@ -28,6 +29,7 @@ const DEFAULT_STRATEGY: Strategy = {
  * Custom hook for managing strategy state and operations
  */
 export function useStrategy() {
+  const router = useRouter();
   const [strategy, setStrategy] = useState<Strategy>({
     ...DEFAULT_STRATEGY,
     id: crypto.randomUUID(),
@@ -102,7 +104,7 @@ export function useStrategy() {
   };
 
   /**
-   * Run backtest (mock implementation)
+   * Run backtest - navigate to results page
    */
   const runBacktest = () => {
     console.log('Running backtest for strategy:', strategy);
@@ -112,7 +114,18 @@ export function useStrategy() {
       return;
     }
 
-    alert(`Strategy "${strategy.name}" ready for backtest!\n\nEntry conditions: ${strategy.entryConditions.length}\nTimeframe: ${strategy.timeframe}\nPair: ${strategy.pair}\nStop Loss: ${strategy.riskManagement.stopLoss}%\nTake Profit: ${strategy.riskManagement.takeProfit}%`);
+    // Create URL with strategy parameters
+    const params = new URLSearchParams({
+      name: strategy.name,
+      timeframe: strategy.timeframe,
+      pair: strategy.pair || 'BTC/USDT',
+      stopLoss: strategy.riskManagement.stopLoss.toString(),
+      takeProfit: strategy.riskManagement.takeProfit.toString(),
+      positionSize: strategy.riskManagement.positionSize.toString(),
+    });
+
+    // Navigate to results page
+    router.push(`/results?${params.toString()}`);
   };
 
   return {

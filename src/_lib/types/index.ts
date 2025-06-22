@@ -3,6 +3,8 @@
 /**
  * Re-export all types for easy importing
  */
+
+// Strategy types
 export type {
   IndicatorType,
   Timeframe,
@@ -14,9 +16,9 @@ export type {
   EquityPoint,
 } from './strategy';
 
-// // Legacy exports for compatibility
-// export type {
-//   IndicatorType as Indicator,
-//   Timeframe,
-//   Strategy,
-// } from './strategy';
+// Results types
+export type {
+  BacktestMetrics,
+  TradeResult,
+  EquityPoint as ResultsEquityPoint,
+} from './results';
