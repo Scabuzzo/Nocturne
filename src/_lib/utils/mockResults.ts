@@ -28,7 +28,7 @@ export function generateMockResults(strategy: Strategy): {
 
 function generateRealisticTrades(strategy: Strategy, durationDays: number, initialCapital: number): TradeResult[] {
   const trades: TradeResult[] = [];
-  const basePrice = 45000; // Starting BTC price
+  let basePrice = 45000; // Starting BTC price - CHANGED FROM const TO let
   let currentCapital = initialCapital; // Track running capital for compounding
   
   // Simulate 1-3 trades per week based on timeframe
@@ -100,7 +100,7 @@ function generateRealisticTrades(strategy: Strategy, durationDays: number, initi
     });
     
     // Update base price to simulate market movement over time
-    basePrice *= (1 + (Math.random() - 0.5) * 0.02); // Gradual price drift
+    basePrice *= (1 + (Math.random() - 0.5) * 0.02); // Gradual price drift - NOW WORKS!
   }
   
   return trades.sort((a, b) => new Date(a.entryTime).getTime() - new Date(b.entryTime).getTime());
