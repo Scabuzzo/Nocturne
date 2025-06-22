@@ -4,19 +4,22 @@
  * Barrel exports for strategy builder components
  */
 
-export { StrategyBuilder } from './StrategyBuilder';
-export type { StrategyBuilderProps } from './StrategyBuilder';
+// New streamlined components
+export { StreamlinedHeader } from './StreamlinedHeader';
+export { IndicatorLibrary } from './IndicatorLibrary';
+export { IndicatorWorkspace } from './IndicatorWorkspace';
 
-export { ParameterSidebar } from './ParameterSidebar';
-export type { ParameterSidebarProps } from './ParameterSidebar';
-
-export { StrategyHeader } from './StrategyHeader';
-
+// Existing components (still in use)
 export { BuilderTabs } from './BuilderTabs';
 export type { BuilderTabsProps } from './BuilderTabs';
 
 export { RiskManagementPanel } from './RiskManagementPanel';
 export type { RiskManagementPanelProps } from './RiskManagementPanel';
 
-export { IndicatorCard, EmptyIndicatorState } from './IndicatorCard';
-export type { IndicatorCardProps } from './IndicatorCard';
+export { ParameterSidebar } from './ParameterSidebar';
+export type { ParameterSidebarProps } from './ParameterSidebar';
+
+// Old components removed:
+// - StrategyBuilder (replaced by IndicatorLibrary + IndicatorWorkspace)
+// - IndicatorCard (replaced by inline cards in IndicatorWorkspace)  
+// - StrategyHeader (replaced by StreamlinedHeader)
