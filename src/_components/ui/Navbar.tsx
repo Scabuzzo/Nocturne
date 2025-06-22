@@ -19,7 +19,7 @@ export function Navbar() {
       <div className="flex gap-6 text-gray-500 ml-6">
         <Link href="/build" className="hover:text-white py-1">Build</Link>
         <Link href="/dashboard" className="hover:text-white py-1">Dashboard</Link>
-        <Link href="/leaderboard" className="hover:text-white py-1">Leaderboard</Link>
+        <Link href="/explore" className="hover:text-white py-1">Explore</Link>
       </div>
 
       <button

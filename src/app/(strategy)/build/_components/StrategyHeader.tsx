@@ -1,41 +1,19 @@
 // src/app/(strategy)/build/_components/StrategyHeader.tsx
 
-import type { Strategy } from '@/_lib/types';
+import type { Strategy } from '@/_lib/types/strategy';
 
-export interface StrategyHeaderProps {
-  /**
-   * Current strategy
-   */
+interface StrategyHeaderProps {
   strategy: Strategy;
-  
-  /**
-   * Callback when strategy metadata is updated
-   */
-  onUpdate: (field: keyof Pick<Strategy, 'name' | 'timeframe'>, value: any) => void;
-  
-  /**
-   * Callback when backtest is requested
-   */
-  onRunBacktest: () => void;
-  
-  /**
-   * Whether backtest button should be disabled
-   */
-  disabled?: boolean;
+  onUpdate: (field: keyof Pick<Strategy, 'name' | 'timeframe' | 'pair'>, value: any) => void;
 }
 
 /**
- * Strategy header component with name, timeframe, and actions
+ * Strategy header with name, pair, and timeframe controls
  */
-export function StrategyHeader({
-  strategy,
-  onUpdate,
-  onRunBacktest,
-  disabled = false,
-}: StrategyHeaderProps) {
+export function StrategyHeader({ strategy, onUpdate }: StrategyHeaderProps) {
   return (
     <div className="border-b border-gray-800 p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex-1 min-w-0">
           <input
             type="text"
@@ -45,11 +23,26 @@ export function StrategyHeader({
             placeholder="Strategy Name"
           />
           <p className="text-gray-400 mt-1">
-            Build your trading strategy with visual indicators
+            Build your trading strategy with visual indicators. Exit based on stop loss/take profit ratios.
           </p>
         </div>
         
-        <div className="flex items-center gap-4 ml-4">
+        <div className="flex items-center gap-4">
+          {/* Trading Pair Selector */}
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-400 mb-1">Trading Pair</label>
+            <select
+              value={strategy.pair}
+              onChange={(e) => onUpdate('pair', e.target.value)}
+              className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="BTC/USDT">BTC/USDT</option>
+              <option value="ETH/USDT">ETH/USDT</option>
+              <option value="SOL/USDT">SOL/USDT</option>
+              <option value="ADA/USDT">ADA/USDT</option>
+            </select>
+          </div>
+
           {/* Timeframe Selector */}
           <div className="flex flex-col">
             <label className="text-xs text-gray-400 mb-1">Timeframe</label>
@@ -64,16 +57,6 @@ export function StrategyHeader({
               <option value="1d">Daily</option>
             </select>
           </div>
-
-          {/* Backtest Button */}
-          <button
-            onClick={onRunBacktest}
-            disabled={disabled}
-            className="bg-green-600 hover:bg-green-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium transition-colors"
-            title={disabled ? 'Add at least one entry condition to run backtest' : 'Run backtest'}
-          >
-            🚀 Run Backtest
-          </button>
         </div>
       </div>
     </div>

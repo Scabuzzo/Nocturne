@@ -2,8 +2,6 @@
 
 /**
  * Barrel exports for strategy builder components
- * 
- * This allows clean imports in the page component
  */
 
 export { StrategyBuilder } from './StrategyBuilder';
@@ -13,7 +11,6 @@ export { ParameterSidebar } from './ParameterSidebar';
 export type { ParameterSidebarProps } from './ParameterSidebar';
 
 export { StrategyHeader } from './StrategyHeader';
-export type { StrategyHeaderProps } from './StrategyHeader';
 
 export { BuilderTabs } from './BuilderTabs';
 export type { BuilderTabsProps } from './BuilderTabs';

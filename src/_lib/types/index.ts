@@ -1,32 +1,22 @@
 // src/_lib/types/index.ts
 
 /**
- * Basic types to get started
+ * Re-export all types for easy importing
  */
+export type {
+  IndicatorType,
+  Timeframe,
+  Indicator,
+  RiskManagement,
+  Strategy,
+  BacktestResult,
+  Trade,
+  EquityPoint,
+} from './strategy';
 
-export type IndicatorType = 
-  | 'RSI' 
-  | 'Moving Average' 
-  | 'MACD' 
-  | 'Bollinger Bands';
-
-export type Timeframe = '15m' | '1h' | '4h' | '1d';
-
-export interface Indicator {
-  id: string;
-  type: IndicatorType;
-  params: Record<string, any>;
-}
-
-export interface Strategy {
-  id: string;
-  name: string;
-  timeframe: Timeframe;
-  entryConditions: Indicator[];
-  exitConditions: Indicator[];
-  riskManagement: {
-    stopLoss: number;
-    takeProfit: number;
-    positionSize: number;
-  };
-}
+// // Legacy exports for compatibility
+// export type {
+//   IndicatorType as Indicator,
+//   Timeframe,
+//   Strategy,
+// } from './strategy';

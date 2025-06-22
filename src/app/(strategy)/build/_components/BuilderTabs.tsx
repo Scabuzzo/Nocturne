@@ -4,22 +4,17 @@ export interface BuilderTabsProps {
   /**
    * Currently active tab
    */
-  activeTab: 'entry' | 'exit' | 'risk';
+  activeTab: 'entry' | 'risk';
   
   /**
    * Callback when tab changes
    */
-  onTabChange: (tab: 'entry' | 'exit' | 'risk') => void;
+  onTabChange: (tab: 'entry' | 'risk') => void;
   
   /**
    * Number of entry conditions (for badge)
    */
   entryCount: number;
-  
-  /**
-   * Number of exit conditions (for badge)
-   */
-  exitCount: number;
   
   /**
    * Additional CSS classes
@@ -29,22 +24,14 @@ export interface BuilderTabsProps {
 
 /**
  * Tab navigation for the strategy builder
- * 
- * Features:
- * - Entry/Exit/Risk tabs
- * - Count badges for conditions
- * - Keyboard navigation support
+ * Only Entry Conditions and Risk Management
  */
 export function BuilderTabs({
   activeTab,
   onTabChange,
   entryCount,
-  exitCount,
   className = '',
 }: BuilderTabsProps) {
-  /**
-   * Tab configuration
-   */
   const tabs = [
     {
       id: 'entry' as const,
@@ -54,42 +41,19 @@ export function BuilderTabs({
       icon: '📈',
     },
     {
-      id: 'exit' as const,
-      label: 'Exit Conditions',
-      description: 'Define when to exit trades',
-      count: exitCount,
-      icon: '📉',
-    },
-    {
       id: 'risk' as const,
       label: 'Risk Management',
-      description: 'Configure stop loss and position sizing',
+      description: 'Configure stop loss, take profit, and position sizing',
       count: undefined,
       icon: '🛡️',
     },
   ];
 
-  /**
-   * Handle tab click
-   */
-  const handleTabClick = (tabId: typeof activeTab) => {
+  const handleTabClick = (tabId: 'entry' | 'risk') => {
     onTabChange(tabId);
   };
 
-  /**
-   * Handle keyboard navigation
-   */
-  const handleKeyDown = (e: React.KeyboardEvent, tabId: typeof activeTab) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleTabClick(tabId);
-    }
-  };
-
-  /**
-   * Get tab styling
-   */
-  const getTabClasses = (tabId: typeof activeTab) => {
+  const getTabClasses = (tabId: 'entry' | 'risk') => {
     const isActive = activeTab === tabId;
     
     return `
@@ -108,24 +72,19 @@ export function BuilderTabs({
         <button
           key={tab.id}
           onClick={() => handleTabClick(tab.id)}
-          onKeyDown={(e) => handleKeyDown(e, tab.id)}
           className={getTabClasses(tab.id)}
           title={tab.description}
           role="tab"
           aria-selected={activeTab === tab.id}
-          tabIndex={0}
         >
-          {/* Icon */}
           <span className="text-lg" role="img" aria-hidden="true">
             {tab.icon}
           </span>
           
-          {/* Label */}
           <span className="font-medium">
             {tab.label}
           </span>
           
-          {/* Count Badge */}
           {tab.count !== undefined && (
             <span className={`
               inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5 rounded-full text-xs font-bold
@@ -138,7 +97,6 @@ export function BuilderTabs({
             </span>
           )}
           
-          {/* Active indicator */}
           {activeTab === tab.id && (
             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-400 rounded-full" />
           )}
