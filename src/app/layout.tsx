@@ -1,7 +1,7 @@
 // app/layout.tsx
 import './globals.css';
 import { ReactNode } from 'react';
-import { Navbar } from './ui/Navbar';
+import { Navbar } from '../_components/ui/Navbar';
 
 export const metadata = {
   title: 'Nocturne – Earn money while you sleep',
