@@ -43,13 +43,6 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative flex items-center gap-2">
-              <Image 
-                src="/nocturne-logo1.png" 
-                alt="Nocturne Logo" 
-                width={32} 
-                height={32}
-                className="group-hover:scale-105 transition-transform"
-              />
               <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-blue-500/25">
                 <span className="text-white text-lg">🌙</span>
               </div>
