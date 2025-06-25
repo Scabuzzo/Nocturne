@@ -73,10 +73,6 @@ export default function StrategyBuilderPage() {
         <div className="w-72 bg-gray-900/50 border-r border-gray-700/50 flex flex-col">
           {activeTab === 'entry' && (
             <>
-              <div className="p-4 border-b border-gray-700/50">
-                <h3 className="text-lg font-bold text-white mb-1">Indicator Library</h3>
-                <p className="text-xs text-gray-400">Click to add indicators</p>
-              </div>
               <div className="flex-1 overflow-y-auto">
                 <IndicatorLibrary
                   availableIndicators={availableIndicators}
