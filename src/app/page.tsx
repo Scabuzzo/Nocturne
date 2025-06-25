@@ -4,7 +4,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function LandingPage() {
   const [email, setEmail] = useState('');
@@ -23,8 +22,8 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20">
+      {/* Hero Section - Updated for navbar */}
+      <section className="relative min-h-screen flex items-center justify-center pt-16">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/10 to-black"></div>
         
@@ -36,20 +35,8 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-          {/* Logo */}
-          <div className="mb-8">
-            <div className="inline-flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                <span className="text-2xl">🌙</span>
-              </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Nocturne
-              </h1>
-            </div>
-          </div>
-
           {/* Main Headline */}
-          <h2 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
             <span className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
               Design by Day.
             </span>
@@ -57,7 +44,7 @@ export default function LandingPage() {
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               Earn by Night.
             </span>
-          </h2>
+          </h1>
 
           {/* Subtitle */}
           <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">

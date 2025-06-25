@@ -9,7 +9,7 @@ interface IndicatorLibraryProps {
 }
 
 /**
- * Clean sidebar library of available indicators
+ * Clean sidebar library of available indicators without header text
  */
 export function IndicatorLibrary({ availableIndicators, onAddIndicator }: IndicatorLibraryProps) {
   const categoryIcons: Record<string, string> = {
@@ -42,15 +42,10 @@ export function IndicatorLibrary({ availableIndicators, onAddIndicator }: Indica
   }, {} as Record<string, IndicatorType[]>);
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="text-center mb-4">
-        <h3 className="text-lg font-bold text-white mb-1">Indicator Library</h3>
-        <p className="text-xs text-gray-400">Click to add indicators</p>
-      </div>
-
+    <div className="p-4 space-y-6">
       {Object.entries(groupedIndicators).map(([category, types]) => (
         <div key={category}>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-3">
             <span className="text-sm">{categoryIcons[category]}</span>
             <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-wide">
               {category}

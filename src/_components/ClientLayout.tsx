@@ -13,13 +13,20 @@ interface ClientLayoutProps {
 export function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname();
   const isLandingPage = pathname === '/';
+  const isStrategyPage = pathname.startsWith('/build') || pathname.startsWith('/results');
 
   return (
     <>
-      {/* Only show navbar if not on landing page */}
-      {!isLandingPage && <Navbar />}
+      {/* Show navbar on all pages now */}
+      <Navbar />
       
-      <main className={isLandingPage ? '' : 'max-w-5xl mx-auto px-4 py-8'}>
+      <main className={
+        isLandingPage 
+          ? '' // Landing page handles its own layout
+          : isStrategyPage 
+            ? '' // Strategy pages are full-width
+            : 'max-w-5xl mx-auto px-4 py-8' // Other pages get container
+      }>
         {children}
       </main>
     </>
