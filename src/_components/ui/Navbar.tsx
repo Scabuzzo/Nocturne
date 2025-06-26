@@ -32,27 +32,30 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-gray-700/20">
-      {/* Updated Gradient Background - from bottom to top */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-950/80 to-gray-950/95 backdrop-blur-xl"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-950/5 to-purple-950/10"></div>
+    <nav className="sticky top-0 z-50 w-full border-b border-gray-800/20">
+      {/* Subtle backdrop with better blur */}
+      <div className="absolute inset-0 bg-gray-950/90 backdrop-blur-xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-950/5 via-transparent to-purple-950/5"></div>
       
-      <div className="relative max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="relative max-w-7xl mx-auto px-6 sm:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+          {/* Logo - More Professional */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative flex items-center gap-2">
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-blue-500/25">
-                <span className="text-white text-lg">🌙</span>
+            <div className="relative flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-sm">
+                {/* Replaced emoji with icon */}
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
               </div>
+              <span className="text-lg font-semibold text-white">
+                Nocturne
+              </span>
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Nocturne
-            </span>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-2">
+          {/* Navigation Links - Cleaner Styling */}
+          <div className="hidden md:flex items-center space-x-1">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -60,36 +63,32 @@ export function Navbar() {
                 className={`
                   relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                   ${isActivePath(item.href)
-                    ? 'text-white bg-gradient-to-r from-blue-600/30 to-purple-600/30 border border-blue-500/40 shadow-lg shadow-blue-500/20'
-                    : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-gray-700/40 hover:backdrop-blur-sm'
+                    ? 'text-white bg-gray-800/50 border border-gray-700/50'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-800/30'
                   }
                 `}
               >
                 {item.name}
-                {isActivePath(item.href) && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-lg blur-sm"></div>
-                )}
               </Link>
             ))}
           </div>
 
-          {/* Wallet Section */}
+          {/* Wallet Section - More Professional */}
           <div className="relative">
             {!walletConnected ? (
               <button
                 onClick={handleWalletClick}
-                className="group relative px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40"
+                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
               >
-                <span className="relative z-10">Connect Wallet</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                Connect Wallet
               </button>
             ) : (
               <div className="relative">
                 <button
                   onClick={handleWalletClick}
-                  className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-gray-800/60 to-gray-700/60 hover:from-gray-700/60 hover:to-gray-600/60 border border-gray-600/30 hover:border-gray-500/30 text-white rounded-lg transition-all backdrop-blur-sm"
+                  className="flex items-center gap-3 px-3 py-2 bg-gray-800/60 hover:bg-gray-700/60 border border-gray-700/40 hover:border-gray-600/40 text-white rounded-lg transition-all duration-200"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center shadow-lg shadow-green-500/25">
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
                   </div>
                   <div className="text-left hidden sm:block">
@@ -97,7 +96,7 @@ export function Navbar() {
                     <div className="text-xs text-gray-400 font-mono">0x1234...5678</div>
                   </div>
                   <svg 
-                    className={`w-4 h-4 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -108,10 +107,10 @@ export function Navbar() {
 
                 {/* Dropdown */}
                 {isDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 z-10">
-                    <div className="p-4 space-y-3">
-                      <div className="flex items-center gap-3 pb-3 border-b border-gray-700/50">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+                  <div className="absolute right-0 mt-2 w-56 bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-xl shadow-xl z-50">
+                    <div className="p-4 border-b border-gray-700/50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                           <div className="w-3 h-3 bg-white rounded-full"></div>
                         </div>
                         <div>
@@ -119,16 +118,8 @@ export function Navbar() {
                           <div className="text-xs text-gray-400 font-mono">0x1234...5678</div>
                         </div>
                       </div>
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setIsDropdownOpen(false)}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors"
-                      >
-                        <div className="w-5 h-5 rounded bg-blue-600/20 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                        </div>
-                        View Dashboard
-                      </Link>
+                    </div>
+                    <div className="p-2">
                       <button
                         onClick={() => {
                           setWalletConnected(false);
@@ -136,9 +127,9 @@ export function Navbar() {
                         }}
                         className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors"
                       >
-                        <div className="w-5 h-5 rounded bg-red-600/20 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                        </div>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
                         Disconnect
                       </button>
                     </div>
@@ -150,8 +141,8 @@ export function Navbar() {
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <button className="p-2 text-gray-400 hover:text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button className="p-2 text-gray-400 hover:text-white rounded-lg transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
