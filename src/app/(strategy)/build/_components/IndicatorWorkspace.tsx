@@ -30,7 +30,7 @@ export function IndicatorWorkspace({
 
   if (isEmpty) {
     return (
-      <div className="flex-1 flex items-center justify-left ml-6">
+      <div className="flex-1 flex items-center justify-left ml-7 mt-7">
         <div className="text-center max-w-md">
           <div className="w-24 h-24 bg-gradient-to-br from-gray-800 to-gray-700 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
