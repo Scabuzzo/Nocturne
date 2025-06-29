@@ -15,9 +15,8 @@ const DEFAULT_STRATEGY: Strategy = {
   riskManagement: {
     stopLoss: 2,
     takeProfit: 4,
-    positionSize: 100,
-    maxDrawdown: 20,
-    maxDailyLoss: 5,
+    positionSize: 1000,
+    maxDailyRisk: 5,
     trailingStop: {
       enabled: false,
       percentage: 2,
@@ -53,6 +52,7 @@ export function useStrategy() {
       entryConditions: [...prev.entryConditions, newIndicator],
     }));
 
+    // Automatically select the newly added indicator
     setSelectedIndicator(newIndicator);
   };
 
@@ -65,6 +65,7 @@ export function useStrategy() {
       entryConditions: prev.entryConditions.filter(i => i.id !== id),
     }));
     
+    // Clear selection if removing the selected indicator
     if (selectedIndicator?.id === id) {
       setSelectedIndicator(null);
     }
@@ -81,8 +82,30 @@ export function useStrategy() {
       ),
     }));
 
+    // FIXED: Update selectedIndicator to reflect the new params
+    // This ensures the sidebar shows the updated parameters
     if (selectedIndicator?.id === id) {
       setSelectedIndicator(prev => prev ? { ...prev, params: newParams } : null);
+    }
+  };
+
+  /**
+   * Set selected indicator (for editing in sidebar)
+   * FIXED: This now properly finds the indicator from the current strategy state
+   */
+  const handleSetSelectedIndicator = (indicator: Indicator | null) => {
+    if (!indicator) {
+      setSelectedIndicator(null);
+      return;
+    }
+
+    // Find the current indicator from strategy state to ensure we have the latest data
+    const currentIndicator = strategy.entryConditions.find(i => i.id === indicator.id);
+    if (currentIndicator) {
+      setSelectedIndicator(currentIndicator);
+    } else {
+      // Fallback to the passed indicator if not found (shouldn't happen)
+      setSelectedIndicator(indicator);
     }
   };
 
@@ -114,32 +137,19 @@ export function useStrategy() {
       return;
     }
 
-    // Create URL with strategy parameters
-    const params = new URLSearchParams({
-      name: strategy.name,
-      timeframe: strategy.timeframe,
-      pair: strategy.pair || 'BTC/USDT',
-      stopLoss: strategy.riskManagement.stopLoss.toString(),
-      takeProfit: strategy.riskManagement.takeProfit.toString(),
-      positionSize: strategy.riskManagement.positionSize.toString(),
-    });
-
-    // Navigate to results page
-    router.push(`/results?${params.toString()}`);
+    // Navigate to results page with strategy data
+    router.push('/results');
   };
 
   return {
-    // State
     strategy,
     selectedIndicator,
-    
-    // Actions
     addIndicator,
     removeIndicator,
     updateIndicatorParams,
     updateRiskManagement,
     updateStrategyMeta,
     runBacktest,
-    setSelectedIndicator,
+    setSelectedIndicator: handleSetSelectedIndicator, // Use the fixed version
   };
 }

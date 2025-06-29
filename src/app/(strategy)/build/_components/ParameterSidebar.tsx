@@ -24,7 +24,7 @@ export interface ParameterSidebarProps {
   /**
    * Callback when backtest is triggered
    */
-  onRunBacktest: () => void;
+  onRunBacktest?: () => void;
 
   /**
    * Whether backtest button should be disabled
@@ -40,6 +40,7 @@ export interface ParameterSidebarProps {
  * - Validation based on indicator configuration
  * - Real-time parameter updates
  * - Responsive design
+ * - FIXED: Proper state sync when indicator changes
  */
 export function ParameterSidebar({
   indicator,
@@ -52,11 +53,12 @@ export function ParameterSidebar({
   const [localParams, setLocalParams] = useState(indicator.params);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Sync local params when indicator changes
+  // FIXED: Reset local params whenever the indicator changes (including ID change)
   useEffect(() => {
-    setLocalParams(indicator.params);
+    console.log('Indicator changed in sidebar:', indicator.type, indicator.id);
+    setLocalParams({ ...indicator.params }); // Create new object to force re-render
     setErrors({}); // Clear any previous errors
-  }, [indicator.id, indicator.params]);
+  }, [indicator.id, indicator.type, indicator.params]); // Added indicator.type to dependencies
 
   /**
    * Validate a parameter value
@@ -83,6 +85,8 @@ export function ParameterSidebar({
    * Handle parameter change
    */
   const handleParameterChange = (key: string, value: any) => {
+    console.log('Parameter change:', key, value, 'for indicator:', indicator.type);
+    
     // Validate the value
     const error = validateParameter(key, value);
     setErrors(prev => ({
@@ -104,40 +108,30 @@ export function ParameterSidebar({
    * Get parameter range description
    */
   const getParameterRangeDescription = (paramConfig: typeof config.parameters[string]): string => {
-    if (paramConfig.type === 'select') {
-      return 'Select from available options';
+    if (paramConfig.type === 'number') {
+      const parts = [];
+      if (paramConfig.min !== undefined) parts.push(`min: ${paramConfig.min}`);
+      if (paramConfig.max !== undefined) parts.push(`max: ${paramConfig.max}`);
+      if (paramConfig.step !== undefined) parts.push(`step: ${paramConfig.step}`);
+      return parts.length > 0 ? `(${parts.join(', ')})` : '';
     }
-    
-    if (paramConfig.min !== undefined && paramConfig.max !== undefined) {
-      return `(${paramConfig.min}-${paramConfig.max})`;
-    } else if (paramConfig.min !== undefined) {
-      return `(min: ${paramConfig.min})`;
-    } else if (paramConfig.max !== undefined) {
-      return `(max: ${paramConfig.max})`;
-    }
-    
     return '';
   };
 
   /**
-   * Render parameter input based on configuration
+   * Render parameter input based on type
    */
   const renderParameterInput = (key: string, paramConfig: typeof config.parameters[string]) => {
-    const value = localParams[key];
-    const error = errors[key];
+    const currentValue = localParams[key] ?? paramConfig.defaultValue ?? '';
 
-    if (paramConfig.type === 'select') {
+    if (paramConfig.type === 'select' && paramConfig.options) {
       return (
         <select
-          value={value}
+          value={currentValue}
           onChange={(e) => handleParameterChange(key, e.target.value)}
-          className={`w-full p-3 rounded-lg bg-gray-800 border text-white focus:outline-none focus:ring-2 transition-all ${
-            error 
-              ? 'border-red-500 focus:ring-red-500' 
-              : 'border-gray-600 focus:ring-blue-500 hover:border-gray-500'
-          }`}
+          className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-          {paramConfig.options?.map((option) => (
+          {paramConfig.options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -146,30 +140,41 @@ export function ParameterSidebar({
       );
     }
 
-    // Use premium slider for number inputs
+    if (paramConfig.type === 'number') {
+      return (
+        <PremiumSlider
+          label=""
+          value={Number(currentValue) || 0}
+          min={paramConfig.min || 0}
+          max={paramConfig.max || 100}
+          step={paramConfig.step || 1}
+          onChange={(value) => handleParameterChange(key, value)}
+          className="w-full"
+        />
+      );
+    }
+
+    // Fallback to text input
     return (
-      <PremiumSlider
-        value={value || 0} // Ensure we always have a defined value
-        min={paramConfig.min || 1}
-        max={paramConfig.max || 100}
-        step={paramConfig.step || 1}
-        label=""
-        onChange={(newValue) => handleParameterChange(key, newValue)}
-        disabled={false}
+      <input
+        type="text"
+        value={currentValue}
+        onChange={(e) => handleParameterChange(key, e.target.value)}
+        className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        placeholder={`Enter ${paramConfig.label.toLowerCase()}`}
       />
     );
   };
 
   return (
-    <div className="w-80 bg-gray-900 border border-gray-700 flex flex-col h-screen sticky top-0">
+    <div className="h-full flex flex-col bg-gray-900/50 backdrop-blur-sm">
       {/* Header */}
-      <div className="p-4 border-b border-gray-700 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-white">{config.name}</h2>
+      <div className="p-6 border-b border-gray-700/50">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-lg font-semibold text-white">{config.name}</h3>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-white transition-colors"
-            title="Close"
+            className="p-1 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -177,66 +182,81 @@ export function ParameterSidebar({
           </button>
         </div>
         
-        <p className="text-sm text-gray-400 mt-2">
-          {config.description}
-        </p>
+        <p className="text-gray-400 text-sm mb-3">{config.description}</p>
         
-        {/* Category Badge */}
-        <div className="mt-3">
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            config.category === 'momentum' ? 'bg-blue-900 text-blue-300' :
-            config.category === 'trend' ? 'bg-green-900 text-green-300' :
-            config.category === 'volume' ? 'bg-yellow-900 text-yellow-300' :
-            'bg-red-900 text-red-300'
+        <div className="flex items-center gap-2">
+          <span className={`text-xs px-2 py-1 rounded-full capitalize font-medium ${
+            config.category === 'momentum' ? 'bg-blue-900/50 text-blue-300' :
+            config.category === 'trend' ? 'bg-green-900/50 text-green-300' :
+            config.category === 'volume' ? 'bg-yellow-900/50 text-yellow-300' :
+            'bg-red-900/50 text-red-300'
           }`}>
             {config.category}
+          </span>
+          <span className="text-xs text-gray-500 font-mono">
+            ID: {indicator.id.slice(0, 8)}
           </span>
         </div>
       </div>
 
       {/* Parameters - Scrollable */}
-      <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-        {Object.entries(config.parameters).map(([key, paramConfig]) => (
-          <div key={key}>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              {paramConfig.label}
-            </label>
-            
-            {renderParameterInput(key, paramConfig)}
-            
-            {/* Error message */}
-            {errors[key] && (
-              <p className="text-red-400 text-xs mt-1">{errors[key]}</p>
-            )}
-            
-            {/* Help text with range info */}
-            <p className="text-gray-500 text-xs mt-1">
-              {paramConfig.description} {getParameterRangeDescription(paramConfig)}
-            </p>
-          </div>
-        ))}
-      </div>
+      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-gray-300 uppercase tracking-wide">
+            Parameters
+          </h4>
+          
+          {Object.entries(config.parameters).map(([key, paramConfig]) => (
+            <div key={key} className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">
+                {paramConfig.label}
+              </label>
+              
+              {renderParameterInput(key, paramConfig)}
+              
+              {/* Error message */}
+              {errors[key] && (
+                <p className="text-red-400 text-xs">{errors[key]}</p>
+              )}
+              
+              {/* Help text with range info */}
+              <p className="text-gray-500 text-xs">
+                {paramConfig.description} {getParameterRangeDescription(paramConfig)}
+              </p>
+            </div>
+          ))}
+        </div>
 
-      {/* Footer with Run Backtest */}
-      <div className="p-4 border-t border-gray-700 flex-shrink-0 space-y-4">
-        {/* Run Backtest Button */}
-        <button
-          onClick={onRunBacktest}
-          disabled={backtestDisabled}
-          className="w-full bg-green-600 hover:bg-green-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-          title={backtestDisabled ? 'Add at least one entry condition' : 'Run backtest with current settings'}
-        >
-          🚀 Run Backtest
-        </button>
-
-        {/* Indicator Info */}
-        <div className="text-xs text-gray-500">
-          <div className="flex justify-between">
-            <span>Indicator ID:</span>
-            <span className="font-mono">{indicator.id.slice(0, 8)}...</span>
+        {/* Current Values Display */}
+        <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/30">
+          <h5 className="text-sm font-medium text-gray-300 mb-2">Current Values</h5>
+          <div className="space-y-1">
+            {Object.entries(localParams).map(([key, value]) => (
+              <div key={key} className="flex justify-between text-xs">
+                <span className="text-gray-400">{key}:</span>
+                <span className="text-white font-mono">{value}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* Footer with Run Backtest */}
+      {onRunBacktest && (
+        <div className="p-6 border-t border-gray-700/30 flex-shrink-0">
+          <button
+            onClick={onRunBacktest}
+            disabled={backtestDisabled}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:from-gray-700 disabled:to-gray-600 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+            title={backtestDisabled ? 'Add at least one entry condition' : 'Run backtest with current settings'}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Run Backtest
+          </button>
+        </div>
+      )}
     </div>
   );
 }
