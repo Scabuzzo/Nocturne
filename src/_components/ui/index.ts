@@ -4,7 +4,7 @@
  * Re-export all UI components
  */
 export { Navbar } from './Navbar';
-export { PremiumSlider } from './PremiumSlider';
+export { PremiumSlider } from './Slider';
 export { Button } from './Button';
 export { Card, CardHeader, CardContent, CardFooter } from './Card';
 

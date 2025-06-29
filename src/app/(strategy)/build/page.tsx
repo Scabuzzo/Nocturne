@@ -10,6 +10,7 @@ import { CompactHeader } from './_components/StrategyHeader';
 import { IndicatorLibrary } from './_components/IndicatorLibrary';
 import { IndicatorWorkspace } from './_components/IndicatorWorkspace';
 import { RiskManagementPanel } from './_components/RiskManagementPanel';
+import { ParameterSidebar } from './_components/ParameterSidebar'; // FIX: Import the real component
 
 export default function StrategyBuilderPage() {
   const {
@@ -35,6 +36,9 @@ export default function StrategyBuilderPage() {
     console.log('Saving strategy:', strategy);
     alert('Strategy saved as draft!');
   };
+
+  // FIX: Add debug logging
+  console.log('Build page render - selectedIndicator:', selectedIndicator?.type, selectedIndicator?.id);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
@@ -100,110 +104,16 @@ export default function StrategyBuilderPage() {
           {/* Right Panel - Parameter Editor (only for entry mode) */}
           {selectedIndicator && activeSection === 'entry' && (
             <div className="w-80 bg-gray-900/40 border border-gray-700/30 rounded-xl backdrop-blur-sm">
-              <ParameterSidebarClean
+              {/* FIX: Use the real ParameterSidebar component */}
+              <ParameterSidebar
                 indicator={selectedIndicator}
                 onUpdateParams={updateIndicatorParams}
                 onClose={() => setSelectedIndicator(null)}
+                onRunBacktest={runBacktest}
+                backtestDisabled={!canRunBacktest}
               />
             </div>
           )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Clean Parameter Sidebar
- */
-function ParameterSidebarClean({
-  indicator,
-  onUpdateParams,
-  onClose,
-}: {
-  indicator: any;
-  onUpdateParams: (id: string, params: any) => void;
-  onClose: () => void;
-}) {
-  return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="p-6 border-b border-gray-700/30">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xl font-bold text-white">MACD</h2>
-          <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-800/30"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        
-        <p className="text-sm text-gray-400 mb-3">
-          Moving Average Convergence Divergence - trend following momentum indicator
-        </p>
-        
-        <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-900/30 text-blue-300 border border-blue-500/30">
-          momentum
-        </div>
-      </div>
-
-      {/* Parameters */}
-      <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-3">Fast Period</label>
-          <div className="space-y-2">
-            <input
-              type="range"
-              min="1"
-              max="50"
-              defaultValue="12"
-              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-            />
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>1</span>
-              <span>50</span>
-            </div>
-          </div>
-          <p className="text-gray-500 text-xs mt-2">Fast EMA period (1-50)</p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-3">Slow Period</label>
-          <div className="space-y-2">
-            <input
-              type="range"
-              min="10"
-              max="100"
-              defaultValue="26"
-              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-            />
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>10</span>
-              <span>100</span>
-            </div>
-          </div>
-          <p className="text-gray-500 text-xs mt-2">Slow EMA period (10-100)</p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-3">Signal Period</label>
-          <div className="space-y-2">
-            <input
-              type="range"
-              min="1"
-              max="50"
-              defaultValue="9"
-              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-            />
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>1</span>
-              <span>50</span>
-            </div>
-          </div>
-          <p className="text-gray-500 text-xs mt-2">Signal line EMA period (1-50)</p>
         </div>
       </div>
     </div>

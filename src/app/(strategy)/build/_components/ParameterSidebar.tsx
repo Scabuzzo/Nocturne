@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import type { Indicator } from '@/_lib/types/strategy';
 import { INDICATOR_CONFIG } from '@/_lib/constants/indicators';
-import { PremiumSlider } from '@/_components/ui/PremiumSlider';
-
+import { PremiumSlider } from '@/_components/ui/Slider';
 
 export interface ParameterSidebarProps {
   /**
@@ -41,7 +40,6 @@ export interface ParameterSidebarProps {
  * - Validation based on indicator configuration
  * - Real-time parameter updates
  * - Responsive design
- * - FIXED: Proper state sync when indicator changes
  */
 export function ParameterSidebar({
   indicator,
@@ -54,12 +52,12 @@ export function ParameterSidebar({
   const [localParams, setLocalParams] = useState(indicator.params);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // FIXED: Reset local params whenever the indicator changes (including ID change)
+  // Reset local params whenever the indicator changes
   useEffect(() => {
     console.log('Indicator changed in sidebar:', indicator.type, indicator.id);
-    setLocalParams({ ...indicator.params }); // Create new object to force re-render
-    setErrors({}); // Clear any previous errors
-  }, [indicator.id, indicator.type, indicator.params]); // Added indicator.type to dependencies
+    setLocalParams({ ...indicator.params });
+    setErrors({});
+  }, [indicator.id, indicator.type, indicator.params]);
 
   /**
    * Validate a parameter value
@@ -122,50 +120,52 @@ export function ParameterSidebar({
   /**
    * Render parameter input based on type
    */
-  const renderParameterInput = (key: string, paramConfig: typeof config.parameters[string]) => {
-    const currentValue = localParams[key] ?? paramConfig.defaultValue ?? '';
+  
+const renderParameterInput = (key: string, paramConfig: typeof config.parameters[string]) => {
+  // FIX: Use config.defaultParams[key] instead of paramConfig.defaultValue
+  const currentValue = localParams[key] ?? config.defaultParams[key] ?? '';
 
-    if (paramConfig.type === 'select' && paramConfig.options) {
-      return (
-        <select
-          value={currentValue}
-          onChange={(e) => handleParameterChange(key, e.target.value)}
-          className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          {paramConfig.options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      );
-    }
-
-    if (paramConfig.type === 'number') {
-      return (
-        <PremiumSlider
-          label=""
-          value={Number(currentValue) || 0}
-          min={paramConfig.min || 0}
-          max={paramConfig.max || 100}
-          step={paramConfig.step || 1}
-          onChange={(value) => handleParameterChange(key, value)}
-          className="w-full"
-        />
-      );
-    }
-
-    // Fallback to text input
+  if (paramConfig.type === 'select' && paramConfig.options) {
     return (
-      <input
-        type="text"
+      <select
         value={currentValue}
         onChange={(e) => handleParameterChange(key, e.target.value)}
         className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        placeholder={`Enter ${paramConfig.label.toLowerCase()}`}
+      >
+        {paramConfig.options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
+  if (paramConfig.type === 'number') {
+    return (
+      <PremiumSlider
+        label=""
+        value={Number(currentValue) || 0}
+        min={paramConfig.min || 0}
+        max={paramConfig.max || 100}
+        step={paramConfig.step || 1}
+        onChange={(value) => handleParameterChange(key, value)}
+        className="w-full"
       />
     );
-  };
+  }
+
+  // Fallback to text input
+  return (
+    <input
+      type="text"
+      value={currentValue}
+      onChange={(e) => handleParameterChange(key, e.target.value)}
+      className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      placeholder={`Enter ${paramConfig.label.toLowerCase()}`}
+    />
+  );
+};
 
   return (
     <div className="h-full flex flex-col bg-gray-900/50 backdrop-blur-sm">
@@ -249,10 +249,10 @@ export function ParameterSidebar({
             onClick={onRunBacktest}
             disabled={backtestDisabled}
             className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:from-gray-700 disabled:to-gray-600 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2"
-            title={backtestDisabled ? 'Add at least one entry condition' : 'Run backtest with current settings'}
+            title={backtestDisabled ? "Add at least one indicator to run backtest" : "Run backtest with current strategy"}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             Run Backtest
           </button>

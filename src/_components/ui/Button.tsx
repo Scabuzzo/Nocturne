@@ -66,8 +66,3 @@ export function Button({
     </button>
   );
 }
-
-// Utility function for class merging
-function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
-}

@@ -68,34 +68,38 @@ export function PremiumSlider({
     onChange(newValue);
   };
 
+  const handleNumberInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = Number(e.target.value);
+    if (!isNaN(newValue) && newValue >= min && newValue <= max) {
+      onChange(newValue);
+    }
+  };
+
   return (
     <div className={`space-y-3 ${className}`}>
       {/* Label and Value Input */}
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-gray-300">
-          {label}
-        </label>
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            value={value || ''} // Handle undefined/null values
-            onChange={(e) => {
-              const newValue = Number(e.target.value);
-              if (!isNaN(newValue) && newValue >= min && newValue <= max) {
-                onChange(newValue);
-              }
-            }}
-            min={min}
-            max={max}
-            step={step}
-            disabled={disabled}
-            className="w-20 text-center text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          />
-          {unit && (
-            <span className="text-sm text-gray-400">{unit}</span>
-          )}
+      {label && (
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-gray-300">
+            {label}
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              value={value || ''}
+              onChange={handleNumberInput}
+              min={min}
+              max={max}
+              step={step}
+              disabled={disabled}
+              className="w-20 text-center text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            {unit && (
+              <span className="text-sm text-gray-400">{unit}</span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Slider Track */}
       <div className="relative">
@@ -146,6 +150,7 @@ export function PremiumSlider({
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
             transition: all 0.2s ease;
+            border: none;
           }
           
           .slider-input::-moz-range-thumb:hover {

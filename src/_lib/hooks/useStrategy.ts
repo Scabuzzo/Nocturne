@@ -16,7 +16,8 @@ const DEFAULT_STRATEGY: Strategy = {
     stopLoss: 2,
     takeProfit: 4,
     positionSize: 1000,
-    maxDailyRisk: 5,
+    maxDrawdown: 20,
+    maxDailyLoss: 5,
     trailingStop: {
       enabled: false,
       percentage: 2,
@@ -40,6 +41,7 @@ export function useStrategy() {
    * Add a new indicator
    */
   const addIndicator = (type: IndicatorType) => {
+    console.log('Adding indicator:', type);
     const config = INDICATOR_CONFIG[type];
     const newIndicator: Indicator = {
       id: crypto.randomUUID(),
@@ -53,6 +55,7 @@ export function useStrategy() {
     }));
 
     // Automatically select the newly added indicator
+    console.log('Auto-selecting new indicator:', newIndicator);
     setSelectedIndicator(newIndicator);
   };
 
@@ -60,6 +63,7 @@ export function useStrategy() {
    * Remove an indicator
    */
   const removeIndicator = (id: string) => {
+    console.log('Removing indicator:', id);
     setStrategy(prev => ({
       ...prev,
       entryConditions: prev.entryConditions.filter(i => i.id !== id),
@@ -67,6 +71,7 @@ export function useStrategy() {
     
     // Clear selection if removing the selected indicator
     if (selectedIndicator?.id === id) {
+      console.log('Clearing selection because removed indicator was selected');
       setSelectedIndicator(null);
     }
   };
@@ -75,6 +80,7 @@ export function useStrategy() {
    * Update indicator parameters
    */
   const updateIndicatorParams = (id: string, newParams: Record<string, any>) => {
+    console.log('Updating params for indicator:', id, newParams);
     setStrategy(prev => ({
       ...prev,
       entryConditions: prev.entryConditions.map(i => 
@@ -82,30 +88,9 @@ export function useStrategy() {
       ),
     }));
 
-    // FIXED: Update selectedIndicator to reflect the new params
-    // This ensures the sidebar shows the updated parameters
+    // Update selectedIndicator to reflect the new params
     if (selectedIndicator?.id === id) {
       setSelectedIndicator(prev => prev ? { ...prev, params: newParams } : null);
-    }
-  };
-
-  /**
-   * Set selected indicator (for editing in sidebar)
-   * FIXED: This now properly finds the indicator from the current strategy state
-   */
-  const handleSetSelectedIndicator = (indicator: Indicator | null) => {
-    if (!indicator) {
-      setSelectedIndicator(null);
-      return;
-    }
-
-    // Find the current indicator from strategy state to ensure we have the latest data
-    const currentIndicator = strategy.entryConditions.find(i => i.id === indicator.id);
-    if (currentIndicator) {
-      setSelectedIndicator(currentIndicator);
-    } else {
-      // Fallback to the passed indicator if not found (shouldn't happen)
-      setSelectedIndicator(indicator);
     }
   };
 
@@ -141,6 +126,12 @@ export function useStrategy() {
     router.push('/results');
   };
 
+  // FIX: Add debug logging for selection
+  const handleSetSelectedIndicator = (indicator: Indicator | null) => {
+    console.log('Setting selected indicator:', indicator?.type, indicator?.id);
+    setSelectedIndicator(indicator);
+  };
+
   return {
     strategy,
     selectedIndicator,
@@ -150,6 +141,6 @@ export function useStrategy() {
     updateRiskManagement,
     updateStrategyMeta,
     runBacktest,
-    setSelectedIndicator: handleSetSelectedIndicator, // Use the fixed version
+    setSelectedIndicator: handleSetSelectedIndicator, // FIX: Simple direct function with logging
   };
 }

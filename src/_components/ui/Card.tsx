@@ -86,8 +86,3 @@ export function CardFooter({ children, className, ...props }: CardFooterProps) {
     </div>
   );
 }
-
-// Utility function for class merging (if not already available)
-function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
-}
