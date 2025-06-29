@@ -19,7 +19,7 @@ export function RiskManagementPanel({
   };
 
   return (
-    <div>
+    <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6 hover:border-gray-600/40 transition-all duration-300">
       <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
         <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span>
         Risk Management
