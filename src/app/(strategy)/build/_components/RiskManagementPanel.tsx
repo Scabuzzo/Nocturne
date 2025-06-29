@@ -1,6 +1,7 @@
 // src/app/(strategy)/build/_components/RiskManagementPanel.tsx
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { RiskManagement } from '@/_lib/types/strategy';
 import { PremiumSlider } from '@/_components/ui/PremiumSlider';
 

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import type { IndicatorType } from '@/_lib/types/strategy';
 import { useStrategy } from '@/_lib/hooks/useStrategy';
 
-import { CompactHeader } from './_components/CompactHeader';
+import { CompactHeader } from './_components/StrategyHeader';
 import { IndicatorLibrary } from './_components/IndicatorLibrary';
 import { IndicatorWorkspace } from './_components/IndicatorWorkspace';
 import { RiskManagementPanel } from './_components/RiskManagementPanel';

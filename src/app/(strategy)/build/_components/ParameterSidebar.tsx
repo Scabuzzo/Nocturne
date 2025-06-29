@@ -5,6 +5,7 @@ import type { Indicator } from '@/_lib/types/strategy';
 import { INDICATOR_CONFIG } from '@/_lib/constants/indicators';
 import { PremiumSlider } from '@/_components/ui/PremiumSlider';
 
+
 export interface ParameterSidebarProps {
   /**
    * The indicator being edited
