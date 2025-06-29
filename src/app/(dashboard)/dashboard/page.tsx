@@ -2,23 +2,59 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-export default function DashboardOverview() {
-  // Mock data - in production, this would come from your API
-  const portfolioStats = {
-    totalValue: 12847.32,
-    totalReturn: 2847.32,
-    totalReturnPercent: 28.47,
-    dayChange: 142.50,
-    dayChangePercent: 1.12,
-  };
+interface PortfolioStats {
+  totalValue: number;
+  dayChange: number;
+  dayChangePercent: string;
+  weekChange: number;
+  weekChangePercent: string;
+}
 
-  const quickStats = [
+interface QuickStat {
+  label: string;
+  value: string;
+  change: string;
+  changeType: 'positive' | 'negative';
+  icon: React.ReactNode;
+}
+
+interface ActiveStrategy {
+  id: string;
+  name: string;
+  pair: string;
+  timeframe: string;
+  status: 'running' | 'paused';
+  pnl: number;
+  winRate: number;
+}
+
+interface RecentActivity {
+  id: string;
+  type: 'profit' | 'entry' | 'stop' | 'create';
+  message: string;
+  time: string;
+  amount?: string;
+}
+
+export default function DashboardPage() {
+  // Portfolio stats with animated values
+  const [portfolioStats] = useState<PortfolioStats>({
+    totalValue: 47582.34,
+    dayChange: 1247.89,
+    dayChangePercent: '+2.69',
+    weekChange: 3456.78,
+    weekChangePercent: '+7.84'
+  });
+
+  // Quick stats with glow effects
+  const [quickStats] = useState<QuickStat[]>([
     {
       label: 'Active Strategies',
-      value: '3',
-      change: '+1',
+      value: '12',
+      change: '+3',
       changeType: 'positive',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,8 +64,8 @@ export default function DashboardOverview() {
     },
     {
       label: 'Win Rate',
-      value: '68.4%',
-      change: '+2.1%',
+      value: '73.2%',
+      change: '+5.1%',
       changeType: 'positive',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,160 +74,133 @@ export default function DashboardOverview() {
       ),
     },
     {
-      label: 'Total Strategies',
-      value: '12',
-      change: '+2',
+      label: 'Total Trades',
+      value: '1,247',
+      change: '+89',
       changeType: 'positive',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
         </svg>
       ),
     },
     {
-      label: 'Watchlist',
-      value: '8',
-      change: '+3',
+      label: 'Avg Return',
+      value: '8.4%',
+      change: '+1.2%',
       changeType: 'positive',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
         </svg>
       ),
     },
-  ];
+  ]);
 
-  const activeStrategies = [
+  // Active strategies with live data
+  const [activeStrategies] = useState<ActiveStrategy[]>([
     {
-      id: '1',
+      id: 'strat-1',
       name: 'RSI Divergence Pro',
       pair: 'BTC/USDT',
       timeframe: '1h',
       status: 'running',
-      pnl: 247.83,
-      pnlPercent: 4.96,
-      trades: 12,
-      winRate: 75,
-      lastSignal: '2h ago',
+      pnl: 1247.89,
+      winRate: 78.5,
     },
     {
-      id: '2',
+      id: 'strat-2',
       name: 'MACD Golden Cross',
       pair: 'ETH/USDT',
       timeframe: '4h',
       status: 'running',
-      pnl: 156.42,
-      pnlPercent: 3.13,
-      trades: 8,
-      winRate: 62.5,
-      lastSignal: '6h ago',
+      pnl: 534.22,
+      winRate: 65.8,
     },
     {
-      id: '3',
-      name: 'Momentum Breakout',
+      id: 'strat-3',
+      name: 'Bollinger Band Squeeze',
       pair: 'SOL/USDT',
-      timeframe: '1h',
+      timeframe: '2h',
       status: 'paused',
-      pnl: -34.27,
-      pnlPercent: -0.69,
-      trades: 15,
-      winRate: 46.7,
-      lastSignal: '3h ago',
+      pnl: -125.45,
+      winRate: 58.2,
     },
-  ];
+  ]);
 
-  const recentActivity = [
+  // Recent activity feed
+  const [recentActivity] = useState<RecentActivity[]>([
     {
-      id: 1,
+      id: 'act-1',
       type: 'profit',
-      message: 'RSI Divergence Pro took profit',
-      amount: '+$47.25',
-      time: '2h ago',
-      pair: 'BTC/USDT',
+      message: 'RSI Divergence Pro closed profitable trade',
+      time: '2 min ago',
+      amount: '+$89.45',
     },
     {
-      id: 2,
+      id: 'act-2',
       type: 'entry',
-      message: 'MACD Golden Cross entered position',
-      time: '6h ago',
-      pair: 'ETH/USDT',
+      message: 'MACD Golden Cross entered BUY position',
+      time: '15 min ago',
     },
     {
-      id: 3,
+      id: 'act-3',
+      type: 'create',
+      message: 'New strategy "Momentum Breakout" created',
+      time: '1 hour ago',
+    },
+    {
+      id: 'act-4',
       type: 'stop',
-      message: 'Momentum Breakout hit stop loss',
-      amount: '-$23.15',
-      time: '1d ago',
-      pair: 'SOL/USDT',
+      message: 'Bollinger Band Squeeze stopped by user',
+      time: '2 hours ago',
     },
     {
-      id: 4,
-      type: 'created',
-      message: 'New strategy "Bollinger Squeeze" created',
-      time: '2d ago',
-      pair: 'ADA/USDT',
+      id: 'act-5',
+      type: 'profit',
+      message: 'Mean Reversion Alpha closed profitable trade',
+      time: '3 hours ago',
+      amount: '+$234.67',
     },
-  ];
+  ]);
 
   return (
-    <div className="p-8 space-y-8">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Overview</h1>
-        <p className="text-gray-400">Monitor your portfolio and strategy performance</p>
-      </div>
-
-      {/* Portfolio Overview - Top Section */}
-      <div className="relative bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-xl p-8 overflow-hidden group">
-        {/* Animated background effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-cyan-600/10 opacity-50 animate-pulse"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-500"></div>
+    <div className="w-full space-y-8 animate-in slide-in-from-bottom-4 duration-700">
+      {/* Portfolio Overview Header with Futuristic Design */}
+      <div className="relative bg-gradient-to-br from-gray-900/70 via-gray-900/50 to-blue-900/30 backdrop-blur-xl border border-gray-700/40 rounded-2xl p-8 overflow-hidden">
+        {/* Animated background pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-cyan-600/5 to-purple-600/5 animate-pulse"></div>
         
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
-            <h2 className="text-lg font-medium text-gray-300 mb-2">Portfolio Value</h2>
-            <div className="text-4xl font-bold bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-transparent group-hover:from-cyan-200 group-hover:via-white group-hover:to-blue-200 transition-all duration-300 mb-2">
-              ${portfolioStats.totalValue.toLocaleString()}
+            <h1 className="text-4xl font-bold mb-3">
+              <span className="bg-gradient-to-r from-white via-cyan-100 to-blue-200 bg-clip-text text-transparent animate-pulse">
+                Welcome Back
+              </span>
+            </h1>
+            <div className="text-5xl font-bold mb-2">
+              <span className="bg-gradient-to-r from-green-400 via-emerald-300 to-cyan-400 bg-clip-text text-transparent bg-size-300 animate-gradient">
+                ${portfolioStats.totalValue.toLocaleString()}
+              </span>
             </div>
-            <div className={`flex items-center gap-1 text-lg font-semibold ${
-              portfolioStats.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'
-            } group-hover:scale-105 transition-transform duration-300`}>
-              {portfolioStats.totalReturn >= 0 ? (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17l9.2-9.2M17 17V7H7" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 7l-9.2 9.2M7 7v10h10" />
-                </svg>
-              )}
-              +${portfolioStats.totalReturn.toLocaleString()} ({portfolioStats.totalReturnPercent}%)
+            <div className="flex items-center gap-4">
+              <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                portfolioStats.dayChange >= 0 
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/30 shadow-lg shadow-green-500/20' 
+                  : 'bg-red-500/20 text-red-400 border border-red-500/30'
+              } transition-all duration-300 hover:scale-105`}>
+                {portfolioStats.dayChange >= 0 ? '+' : ''}${portfolioStats.dayChange}
+              </div>
+              <div className="text-sm text-gray-400">({portfolioStats.dayChangePercent}%)</div>
             </div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-sm text-gray-400 mb-1">Today's Change</div>
-            <div className={`text-2xl font-bold ${
-              portfolioStats.dayChange >= 0 ? 'text-green-400' : 'text-red-400'
-            } group-hover:scale-105 transition-transform duration-300`}>
-              {portfolioStats.dayChange >= 0 ? '+' : ''}${portfolioStats.dayChange}
-            </div>
-            <div className="text-sm text-gray-400">({portfolioStats.dayChangePercent}%)</div>
           </div>
 
           <div className="text-center lg:text-right">
             <Link
               href="/build"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-blue-500/25 hover:scale-105 transform duration-200"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-medium transition-all hover:shadow-2xl hover:shadow-blue-500/30 hover:scale-105 transform duration-300 border border-blue-500/30"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Create Strategy
-            </Link>
-          </div>
-        </div>
-      </div>="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               Create Strategy
@@ -200,28 +209,39 @@ export default function DashboardOverview() {
         </div>
       </div>
 
-      {/* Quick Stats Grid */}
+      {/* Quick Stats Grid with Enhanced Glow Effects */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {quickStats.map((stat, index) => (
-          <div key={index} className="relative bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6 hover:border-cyan-500/40 transition-all duration-300 group overflow-hidden">
-            {/* Glow effect on hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-cyan-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div 
+            key={index} 
+            className="group relative bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-500 overflow-hidden"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            {/* Animated glow effect on hover */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-cyan-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
+            
+            {/* Neon border effect */}
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
             
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-400 group-hover:bg-cyan-500/20 group-hover:border-cyan-500/30 group-hover:text-cyan-400 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-cyan-500/20">
+                <div className="p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-400 group-hover:bg-cyan-500/30 group-hover:border-cyan-500/50 group-hover:text-cyan-300 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-cyan-500/25 group-hover:scale-110">
                   {stat.icon}
                 </div>
-                <div className={`text-xs px-2 py-1 rounded-full ${
+                <div className={`text-xs px-3 py-1 rounded-full font-medium ${
                   stat.changeType === 'positive' 
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30 group-hover:shadow-md group-hover:shadow-green-500/20'
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/30 group-hover:shadow-lg group-hover:shadow-green-500/25'
                     : 'bg-red-500/20 text-red-400 border border-red-500/30'
                 } transition-all duration-300`}>
                   {stat.change}
                 </div>
               </div>
-              <div className="text-2xl font-bold text-white mb-1 group-hover:text-cyan-100 transition-colors duration-300">{stat.value}</div>
-              <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">{stat.label}</div>
+              <div className="text-3xl font-bold text-white mb-2 group-hover:text-cyan-100 transition-colors duration-300">
+                {stat.value}
+              </div>
+              <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+                {stat.label}
+              </div>
             </div>
           </div>
         ))}
@@ -229,40 +249,52 @@ export default function DashboardOverview() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Active Strategies */}
+        {/* Active Strategies Section */}
         <div className="lg:col-span-2">
-          <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6">
+          <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6 hover:border-gray-600/50 transition-all duration-300">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold text-white">Active Strategies</h3>
               <Link 
                 href="/dashboard/active"
-                className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+                className="text-blue-400 hover:text-cyan-400 text-sm font-medium transition-colors duration-200 hover:underline"
               >
                 View All →
               </Link>
             </div>
             
             <div className="space-y-4">
-              {activeStrategies.map((strategy) => (
-                <div key={strategy.id} className="bg-gray-800/30 border border-gray-700/50 rounded-lg p-4 hover:bg-gray-800/50 transition-all">
+              {activeStrategies.map((strategy, index) => (
+                <div 
+                  key={strategy.id} 
+                  className="group bg-gray-800/30 border border-gray-700/50 rounded-lg p-4 hover:bg-gray-800/60 hover:border-gray-600/60 transition-all duration-300 hover:shadow-lg hover:shadow-gray-900/20"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className={`w-3 h-3 rounded-full ${
-                        strategy.status === 'running' ? 'bg-green-400' : 'bg-yellow-400'
+                      <div className={`w-3 h-3 rounded-full shadow-lg ${
+                        strategy.status === 'running' 
+                          ? 'bg-green-400 shadow-green-400/50 animate-pulse' 
+                          : 'bg-yellow-400 shadow-yellow-400/50'
                       }`} />
                       <div>
-                        <div className="font-semibold text-white">{strategy.name}</div>
-                        <div className="text-sm text-gray-400">{strategy.pair} • {strategy.timeframe}</div>
+                        <div className="font-semibold text-white group-hover:text-cyan-100 transition-colors duration-200">
+                          {strategy.name}
+                        </div>
+                        <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-200">
+                          {strategy.pair} • {strategy.timeframe}
+                        </div>
                       </div>
                     </div>
                     
                     <div className="text-right">
-                      <div className={`font-semibold ${
-                        strategy.pnl >= 0 ? 'text-green-400' : 'text-red-400'
+                      <div className={`font-semibold transition-colors duration-200 ${
+                        strategy.pnl >= 0 ? 'text-green-400 group-hover:text-green-300' : 'text-red-400 group-hover:text-red-300'
                       }`}>
                         {strategy.pnl >= 0 ? '+' : ''}${strategy.pnl}
                       </div>
-                      <div className="text-sm text-gray-400">{strategy.winRate}% WR</div>
+                      <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-200">
+                        {strategy.winRate}% WR
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -271,35 +303,45 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-        {/* Recent Activity */}
+        {/* Recent Activity Section */}
         <div>
-          <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6">
+          <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6 hover:border-gray-600/50 transition-all duration-300">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold text-white">Recent Activity</h3>
               <Link 
                 href="/dashboard/history"
-                className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+                className="text-blue-400 hover:text-cyan-400 text-sm font-medium transition-colors duration-200 hover:underline"
               >
                 View All →
               </Link>
             </div>
             
             <div className="space-y-4">
-              {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-3">
-                  <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                    activity.type === 'profit' ? 'bg-green-400' :
-                    activity.type === 'entry' ? 'bg-blue-400' :
-                    activity.type === 'stop' ? 'bg-red-400' :
-                    'bg-gray-400'
+              {recentActivity.map((activity, index) => (
+                <div 
+                  key={activity.id} 
+                  className="flex items-start gap-3 group"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 shadow-lg transition-all duration-200 ${
+                    activity.type === 'profit' ? 'bg-green-400 shadow-green-400/50 group-hover:scale-125' :
+                    activity.type === 'entry' ? 'bg-blue-400 shadow-blue-400/50 group-hover:scale-125' :
+                    activity.type === 'stop' ? 'bg-red-400 shadow-red-400/50 group-hover:scale-125' :
+                    'bg-gray-400 shadow-gray-400/50 group-hover:scale-125'
                   }`} />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-white mb-1">{activity.message}</div>
+                    <div className="text-sm text-white mb-1 group-hover:text-cyan-100 transition-colors duration-200">
+                      {activity.message}
+                    </div>
                     <div className="flex items-center justify-between">
-                      <div className="text-xs text-gray-400">{activity.time}</div>
+                      <div className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors duration-200">
+                        {activity.time}
+                      </div>
                       {activity.amount && (
-                        <div className={`text-xs font-medium ${
-                          activity.amount.startsWith('+') ? 'text-green-400' : 'text-red-400'
+                        <div className={`text-xs font-medium transition-colors duration-200 ${
+                          activity.amount.startsWith('+') 
+                            ? 'text-green-400 group-hover:text-green-300' 
+                            : 'text-red-400 group-hover:text-red-300'
                         }`}>
                           {activity.amount}
                         </div>
@@ -313,56 +355,85 @@ export default function DashboardOverview() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-blue-500/20 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+      {/* Quick Actions Section with Enhanced Styling */}
+      <div className="bg-gradient-to-r from-blue-900/20 via-purple-900/20 to-cyan-900/20 border border-blue-500/30 rounded-xl p-8 backdrop-blur-xl">
+        <h3 className="text-lg font-semibold text-white mb-6">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link 
             href="/build"
-            className="flex items-center gap-3 p-4 bg-blue-600/20 border border-blue-500/30 rounded-lg hover:bg-blue-600/30 transition-all group"
+            className="group flex items-center gap-3 p-4 bg-blue-600/20 border border-blue-500/30 rounded-lg hover:bg-blue-600/40 hover:border-blue-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
           >
-            <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-400 group-hover:scale-110 transition-transform">
+            <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-400 group-hover:scale-110 group-hover:text-blue-300 transition-all duration-300">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
             </div>
             <div>
-              <div className="font-medium text-white">Create Strategy</div>
-              <div className="text-sm text-blue-200">Build a new trading strategy</div>
+              <div className="font-medium text-white group-hover:text-cyan-100 transition-colors duration-200">
+                Build Strategy
+              </div>
+              <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-200">
+                Create new trading strategy
+              </div>
             </div>
           </Link>
 
           <Link 
             href="/explore"
-            className="flex items-center gap-3 p-4 bg-purple-600/20 border border-purple-500/30 rounded-lg hover:bg-purple-600/30 transition-all group"
+            className="group flex items-center gap-3 p-4 bg-green-600/20 border border-green-500/30 rounded-lg hover:bg-green-600/40 hover:border-green-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/25"
           >
-            <div className="p-2 bg-purple-500/20 border border-purple-500/30 rounded-lg text-purple-400 group-hover:scale-110 transition-transform">
+            <div className="p-2 bg-green-500/20 border border-green-500/30 rounded-lg text-green-400 group-hover:scale-110 group-hover:text-green-300 transition-all duration-300">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <div>
-              <div className="font-medium text-white">Explore Strategies</div>
-              <div className="text-sm text-purple-200">Discover top performing strategies</div>
+              <div className="font-medium text-white group-hover:text-cyan-100 transition-colors duration-200">
+                Explore Strategies
+              </div>
+              <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-200">
+                Browse community strategies
+              </div>
             </div>
           </Link>
 
-          <Link 
-            href="/dashboard/active"
-            className="flex items-center gap-3 p-4 bg-green-600/20 border border-green-500/30 rounded-lg hover:bg-green-600/30 transition-all group"
-          >
-            <div className="p-2 bg-green-500/20 border border-green-500/30 rounded-lg text-green-400 group-hover:scale-110 transition-transform">
+          <div className="group flex items-center gap-3 p-4 bg-purple-600/20 border border-purple-500/30 rounded-lg hover:bg-purple-600/40 hover:border-purple-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 cursor-pointer">
+            <div className="p-2 bg-purple-500/20 border border-purple-500/30 rounded-lg text-purple-400 group-hover:scale-110 group-hover:text-purple-300 transition-all duration-300">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
             <div>
-              <div className="font-medium text-white">Manage Bots</div>
-              <div className="text-sm text-green-200">Control your active strategies</div>
+              <div className="font-medium text-white group-hover:text-cyan-100 transition-colors duration-200">
+                View Analytics
+              </div>
+              <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-200">
+                Deep performance insights
+              </div>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
+// Add custom CSS animations in your global styles if needed:
+/*
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+}
+
+.bg-300% {
+  background-size: 300% 300%;
+}
+*/

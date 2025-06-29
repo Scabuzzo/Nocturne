@@ -1,4 +1,4 @@
-// src/app/(strategy)/build/page.tsx
+// src/app/(strategy)/build/page.tsx - Clean and refactored
 
 'use client';
 
@@ -9,8 +9,8 @@ import { useStrategy } from '@/_lib/hooks/useStrategy';
 import { CompactHeader } from './_components/StrategyHeader';
 import { IndicatorLibrary } from './_components/IndicatorLibrary';
 import { IndicatorWorkspace } from './_components/IndicatorWorkspace';
+import { ParameterSidebar } from './_components/ParameterSidebar';
 import { RiskManagementPanel } from './_components/RiskManagementPanel';
-import { ParameterSidebar } from './_components/ParameterSidebar'; // FIX: Import the real component
 
 export default function StrategyBuilderPage() {
   const {
@@ -25,95 +25,84 @@ export default function StrategyBuilderPage() {
     setSelectedIndicator,
   } = useStrategy();
 
-  const [activeSection, setActiveSection] = useState<'entry' | 'risk'>('entry');
-
-  // Available indicator types
+  // Available indicator types with enhanced data for the library
   const availableIndicators: IndicatorType[] = ['RSI', 'Moving Average', 'MACD', 'Bollinger Bands'];
-
-  const canRunBacktest = strategy.entryConditions.length > 0;
+  const canRunBacktest = strategy?.entryConditions?.length > 0;
 
   const handleSave = () => {
     console.log('Saving strategy:', strategy);
     alert('Strategy saved as draft!');
   };
 
-  // FIX: Add debug logging
-  console.log('Build page render - selectedIndicator:', selectedIndicator?.type, selectedIndicator?.id);
+  const handleAddIndicator = (type: IndicatorType) => {
+    addIndicator(type);
+    // Auto-select the newly added indicator for editing
+    // Note: We'll let the useStrategy hook handle the auto-selection
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
-      {/* Compact Header with integrated tabs */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900 relative overflow-hidden">
+      {/* Animated background effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-float opacity-60"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-600/15 rounded-full blur-2xl animate-pulse opacity-50" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-cyan-600/10 rounded-full blur-2xl animate-float opacity-40" style={{ animationDelay: '2s' }}></div>
+      </div>
+
+      {/* Header */}
       <CompactHeader 
         strategy={strategy}
         onUpdate={updateStrategyMeta}
         onSave={handleSave}
         onRunBacktest={runBacktest}
         canRunBacktest={canRunBacktest}
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-        entryCount={strategy.entryConditions.length}
       />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-8 py-6">
-        <div className="flex gap-6">
-          {/* Left Panel - Context sensitive */}
-          <div className="w-80 bg-gray-900/30 border border-gray-700/30 rounded-xl flex flex-col">
-            {activeSection === 'entry' ? (
-              <div className="flex-1 overflow-y-auto">
-                <IndicatorLibrary
-                  availableIndicators={availableIndicators}
-                  onAddIndicator={addIndicator}
-                />
-              </div>
-            ) : (
-              <div className="p-6">
-                <div className="text-center text-gray-400 py-12">
-                  <div className="w-16 h-16 bg-gradient-to-br from-amber-600/20 to-orange-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold text-white mb-3">Risk Settings</h3>
-                  <p className="text-sm leading-relaxed">Configure stop loss, take profit, and position sizing in the main area</p>
-                </div>
-              </div>
-            )}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-12 gap-8 min-h-[calc(100vh-280px)]">
+          
+          {/* Left Panel - Indicator Library */}
+          <div className="col-span-3">
+            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6 hover:border-gray-600/40 transition-all duration-300 h-full">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+                Indicator Library
+              </h3>
+              <IndicatorLibrary
+                availableIndicators={availableIndicators}
+                onAddIndicator={handleAddIndicator}
+              />
+            </div>
           </div>
 
-          {/* Main Workspace */}
-          <div className="flex-1 bg-gray-900/20 border border-gray-700/20 rounded-xl">
-            {activeSection === 'entry' ? (
+          {/* Center Panel - Workspace */}
+          <div className="col-span-6">
+            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl hover:border-gray-600/40 transition-all duration-300 h-full">
               <IndicatorWorkspace
-                indicators={strategy.entryConditions}
+                indicators={strategy?.entryConditions || []}
                 selectedIndicator={selectedIndicator}
                 onSelectIndicator={setSelectedIndicator}
                 onRemoveIndicator={removeIndicator}
-                isEmpty={strategy.entryConditions.length === 0}
-              />
-            ) : (
-              <div className="p-8">
-                <RiskManagementPanel
-                  riskManagement={strategy.riskManagement}
-                  onUpdate={updateRiskManagement}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Right Panel - Parameter Editor (only for entry mode) */}
-          {selectedIndicator && activeSection === 'entry' && (
-            <div className="w-80 bg-gray-900/40 border border-gray-700/30 rounded-xl backdrop-blur-sm">
-              {/* FIX: Use the real ParameterSidebar component */}
-              <ParameterSidebar
-                indicator={selectedIndicator}
                 onUpdateParams={updateIndicatorParams}
-                onClose={() => setSelectedIndicator(null)}
-                onRunBacktest={runBacktest}
-                backtestDisabled={!canRunBacktest}
+                isEmpty={!strategy?.entryConditions?.length}
               />
             </div>
-          )}
+          </div>
+
+          {/* Right Panel - Only Risk Management */}
+          <div className="col-span-3">
+            <RiskManagementPanel
+              riskManagement={strategy?.riskManagement || {
+                stopLoss: 0,
+                takeProfit: 0,
+                positionSize: 0,
+                maxDrawdown: 0,
+                maxDailyLoss: 0,
+              }}
+              onUpdate={updateRiskManagement}
+            />
+          </div>
         </div>
       </div>
     </div>
