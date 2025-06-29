@@ -1,6 +1,7 @@
 // src/app/(strategy)/build/_components/IndicatorLibrary.tsx
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { IndicatorType } from '@/_lib/types/strategy';
 import { INDICATOR_CONFIG } from '@/_lib/constants/indicators';
 
@@ -9,18 +10,29 @@ interface IndicatorLibraryProps {
   onAddIndicator: (type: IndicatorType) => void;
 }
 
+interface TooltipData {
+  text: string;
+  x: number;
+  y: number;
+}
+
 /**
- * Enhanced indicator library with futuristic design
+ * Enhanced indicator library with portal-based tooltip
  */
 export function IndicatorLibrary({ availableIndicators, onAddIndicator }: IndicatorLibraryProps) {
-  const [tooltipData, setTooltipData] = useState<{ text: string; x: number; y: number } | null>(null);
+  const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleMouseEnter = (e: React.MouseEvent, description: string) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setTooltipData({
       text: description,
-      x: rect.right + 10, // Position to the right of the icon
-      y: rect.top + rect.height / 2, // Center vertically
+      x: rect.right + 10,
+      y: rect.top + rect.height / 2,
     });
   };
 
@@ -82,7 +94,7 @@ export function IndicatorLibrary({ availableIndicators, onAddIndicator }: Indica
                   <h4 className="font-medium text-white group-hover:text-cyan-100 transition-colors duration-200">
                     {indicator.type}
                   </h4>
-                  {/* Info tooltip */}
+                  {/* Info tooltip trigger */}
                   <svg 
                     className="w-3 h-3 text-gray-500 hover:text-gray-300 cursor-help transition-colors duration-200" 
                     fill="currentColor" 
@@ -128,19 +140,20 @@ export function IndicatorLibrary({ availableIndicators, onAddIndicator }: Indica
         </div>
       </div>
 
-      {/* Global tooltip that appears at the very top */}
-      {tooltipData && (
+      {/* Portal-based tooltip that renders outside the component tree */}
+      {mounted && tooltipData && createPortal(
         <div 
-          className="fixed pointer-events-none z-[999999] px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-2xl border border-gray-700 w-64"
+          className="fixed pointer-events-none z-[99999] w-64 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-2xl border border-gray-700"
           style={{ 
             left: tooltipData.x, 
-            top: tooltipData.y - 12, // Slightly above the mouse
+            top: tooltipData.y - 12,
             transform: 'translateY(-50%)'
           }}
         >
           {tooltipData.text}
           <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-900"></div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

@@ -27,11 +27,12 @@ export interface Indicator {
  * Risk management configuration
  */
 export interface RiskManagement {
-  stopLoss: number;          // Percentage
-  takeProfit: number;        // Percentage
-  positionSize: number;      // USD amount
-  maxDrawdown: number;       // Maximum portfolio drawdown percentage
-  maxDailyLoss: number;      // Maximum daily loss percentage
+  stopLoss: number;          // Percentage - Based on market structure or volatility
+  positionSize: number;      // Percentage - Calculated from: risk per trade / SL %
+  maxRiskPerTrade: number;   // Percentage - e.g. 1%
+  takeProfit?: number;       // Percentage (kept for backward compatibility)
+  maxDrawdown?: number;      // Maximum portfolio drawdown percentage (kept for backward compatibility)
+  maxDailyLoss?: number;     // Maximum daily loss percentage (kept for backward compatibility)
   trailingStop?: {
     enabled: boolean;
     percentage: number;

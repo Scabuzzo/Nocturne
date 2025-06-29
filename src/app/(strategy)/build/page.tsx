@@ -1,4 +1,4 @@
-// src/app/(strategy)/build/page.tsx - Clean and refactored
+// src/app/(strategy)/build/page.tsx - Updated with maxRiskPerTrade
 
 'use client';
 
@@ -90,13 +90,14 @@ export default function StrategyBuilderPage() {
             </div>
           </div>
 
-          {/* Right Panel - Only Risk Management */}
+          {/* Right Panel - Risk Management */}
           <div className="col-span-3">
             <RiskManagementPanel
               riskManagement={strategy?.riskManagement || {
                 stopLoss: 0,
-                takeProfit: 0,
                 positionSize: 0,
+                maxRiskPerTrade: 0,
+                takeProfit: 0,
                 maxDrawdown: 0,
                 maxDailyLoss: 0,
               }}
