@@ -142,16 +142,20 @@ export default function DashboardOverview() {
       </div>
 
       {/* Portfolio Overview - Top Section */}
-      <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-xl p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+      <div className="relative bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-xl p-8 overflow-hidden group">
+        {/* Animated background effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-cyan-600/10 opacity-50 animate-pulse"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-500"></div>
+        
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
           <div>
             <h2 className="text-lg font-medium text-gray-300 mb-2">Portfolio Value</h2>
-            <div className="text-4xl font-bold text-white mb-2">
+            <div className="text-4xl font-bold bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-transparent group-hover:from-cyan-200 group-hover:via-white group-hover:to-blue-200 transition-all duration-300 mb-2">
               ${portfolioStats.totalValue.toLocaleString()}
             </div>
             <div className={`flex items-center gap-1 text-lg font-semibold ${
               portfolioStats.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'
-            }`}>
+            } group-hover:scale-105 transition-transform duration-300`}>
               {portfolioStats.totalReturn >= 0 ? (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17l9.2-9.2M17 17V7H7" />
@@ -169,7 +173,7 @@ export default function DashboardOverview() {
             <div className="text-sm text-gray-400 mb-1">Today's Change</div>
             <div className={`text-2xl font-bold ${
               portfolioStats.dayChange >= 0 ? 'text-green-400' : 'text-red-400'
-            }`}>
+            } group-hover:scale-105 transition-transform duration-300`}>
               {portfolioStats.dayChange >= 0 ? '+' : ''}${portfolioStats.dayChange}
             </div>
             <div className="text-sm text-gray-400">({portfolioStats.dayChangePercent}%)</div>
@@ -178,9 +182,16 @@ export default function DashboardOverview() {
           <div className="text-center lg:text-right">
             <Link
               href="/build"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-lg font-medium transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-blue-500/25 hover:scale-105 transform duration-200"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Create Strategy
+            </Link>
+          </div>
+        </div>
+      </div>="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               Create Strategy
@@ -192,21 +203,26 @@ export default function DashboardOverview() {
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {quickStats.map((stat, index) => (
-          <div key={index} className="bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6 hover:border-gray-600/50 transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-400">
-                {stat.icon}
+          <div key={index} className="relative bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-xl p-6 hover:border-cyan-500/40 transition-all duration-300 group overflow-hidden">
+            {/* Glow effect on hover */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-cyan-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-400 group-hover:bg-cyan-500/20 group-hover:border-cyan-500/30 group-hover:text-cyan-400 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-cyan-500/20">
+                  {stat.icon}
+                </div>
+                <div className={`text-xs px-2 py-1 rounded-full ${
+                  stat.changeType === 'positive' 
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/30 group-hover:shadow-md group-hover:shadow-green-500/20'
+                    : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                } transition-all duration-300`}>
+                  {stat.change}
+                </div>
               </div>
-              <div className={`text-xs px-2 py-1 rounded-full ${
-                stat.changeType === 'positive' 
-                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                  : 'bg-red-500/20 text-red-400 border border-red-500/30'
-              }`}>
-                {stat.change}
-              </div>
+              <div className="text-2xl font-bold text-white mb-1 group-hover:text-cyan-100 transition-colors duration-300">{stat.value}</div>
+              <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">{stat.label}</div>
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-            <div className="text-sm text-gray-400">{stat.label}</div>
           </div>
         ))}
       </div>
